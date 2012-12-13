@@ -23,40 +23,58 @@ public class SplashScreen extends BaseGameActivity {
 	// Constants
 	// ===========================================================
 
+	/* Defines splash screen width and height */
 	private static final int CAMERA_WIDTH = 1024;
 	private static final int CAMERA_HEIGHT = 614;
-
+	
+	private static final int SPLASH_DELAY = 3000;
+	
 	// ===========================================================
 	// Fields
 	// ===========================================================
 
-	private Camera mCamera;
-	private Texture mTexture;
+	private Camera mSplashCamera;
+	private Texture mSplashTexture;
 	private TextureRegion mSplashTextureRegion;
-	private Handler mHandler;
+	private Handler mSplashHandler;
 
+	
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 	
+	@Override
 	public Engine onLoadEngine() {
-		mHandler = new Handler();
-		this.mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		
+		mSplashHandler = new Handler();
+		this.mSplashCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+		
 		return new Engine(new EngineOptions(true, ScreenOrientation.LANDSCAPE,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
-				this.mCamera));
+				this.mSplashCamera));
+		
 	}
 
+	@Override
 	public void onLoadResources() {
-		this.mTexture = new Texture(1024, 512,
+		
+		/* Set the texture set up in the gfx directory */
+		TextureRegionFactory.setAssetBasePath("gfx/");
+		
+		/* Set up the splash texture */
+		this.mSplashTexture = new Texture(1024, 512,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.mSplashTextureRegion = TextureRegionFactory.createFromAsset(
-				this.mTexture, this, "gfx/hellsten_inc.png", 0, 0);
+				this.mSplashTexture, this, "hellsten_inc.png", 0, 0);
 
-		this.mEngine.getTextureManager().loadTexture(this.mTexture);
+		/* Load the textures to the texture manager */
+		this.mEngine.getTextureManager().loadTexture(this.mSplashTexture);
+		
 	}
 
+	@Override
 	public Scene onLoadScene() {
+		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
 		final Scene scene = new Scene(1);
@@ -67,24 +85,38 @@ public class SplashScreen extends BaseGameActivity {
 		final int centerY = (CAMERA_HEIGHT - this.mSplashTextureRegion
 				.getHeight()) / 2;
 
-		/* Create the sprite and add it to the scene. */
+		/* Create the splash sprite and add it to the scene. */
 		final Sprite splash = new Sprite(centerX, centerY,
 				this.mSplashTextureRegion);
+		
+		/* Add all the entities to the scene */
 		scene.getLastChild().attachChild(splash);
-
+		
 		return scene;
+		
 	}
 
+	@Override
 	public void onLoadComplete() {
-		mHandler.postDelayed(mLaunchTask, 3000);
+		
+		/* Start the splash launch after the delay */
+		mSplashHandler.postDelayed(mLaunchSplash, SPLASH_DELAY);
+		
 	}
-
-	private Runnable mLaunchTask = new Runnable() {
+	
+	/* This launches the game control screen when it is exectued */
+	private Runnable mLaunchSplash = new Runnable() {
+		
 		public void run() {
+			
 			Intent myIntent = new Intent(SplashScreen.this,
 					GameControlScreen.class);
 			SplashScreen.this.startActivity(myIntent);
+			
+			SplashScreen.this.finish();
 		}
+		
 	};
+	
 
 }
