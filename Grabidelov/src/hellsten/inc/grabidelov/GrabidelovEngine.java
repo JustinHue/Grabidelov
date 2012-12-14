@@ -47,6 +47,8 @@ public class GrabidelovEngine {
 	private OnBoundaryCollisionListener bcl;
 	
 	private ArrayList <GrabidelovEntity> entities;
+	private ArrayList <Integer> gravityImmuneList;
+	
 	private Camera cameraContext;
 	private Entity layerContext;
 	private Engine engineContext;
@@ -69,7 +71,7 @@ public class GrabidelovEngine {
 		this.cameraContext = cameraContext;
 		this.layerContext = layerContext;
 		this.entities = new ArrayList<GrabidelovEntity>();
-		
+		this.gravityImmuneList = new ArrayList<Integer>();
 	}
 	
 	//=====================================================================================
@@ -84,11 +86,6 @@ public class GrabidelovEngine {
 		this.leftBoundary = leftBoundary;
 	}
 	
-	// This method checks if the entities are within the boundary limit, if not they are removed
-	private void checkBoundaryLimit(final GrabidelovEntity entity) {
-
-
-	}
 	
 	// This method takes in an entity arguement and shoots the entity
 	// from any boundary into the scene.
@@ -143,10 +140,18 @@ public class GrabidelovEngine {
 		return entities.size();
 	}
 	
+	
 	//=====================================================================================================================================
 	// 													Public Methods
 	//=====================================================================================================================================
 
+	//=====================================================================================
+	// -- Adds to the gravity immune list
+	//=====================================================================================		
+	public void addToGravityImmuneList(int immuneClass) {
+		gravityImmuneList.add(immuneClass);
+	}
+	
 	//=====================================================================================
 	// -- This method runs the Grabidelov engine by moving all the Grabidelov entities
 	// -- base on the law of gravity between the masses.
@@ -160,29 +165,41 @@ public class GrabidelovEngine {
 		for (int i = 0; i < entities.size(); i++) {
 			
 			GrabidelovEntity entity1 = entities.get(i);
+
+			/* Only bother if the entity is attracting */
+			if (entity1.isAttracting()) {
 			
-			for (int k = 0; k < entities.size(); k++) {
-				
-				GrabidelovEntity entity2 = entities.get(k);
-				
-				if (entity1 != entity2) {
-					// Find the radius between the entity and the point of gravitation.
-					double radius = calculateRadius(entity1.getCenterX(), entity1.getCenterY(), entity2.getCenterX(), entity2.getCenterY());
-		
-					// Find the acceleration of the force
-					double gravityForce = calculateGravitationalForce(entity1.getMass(), entity2.getMass(), radius);
-					double acceleration = calculateAcceleration(gravityForce, entity2.getMass());
-						
-					// find the angle between the two masses
-					double angle = Math.atan2(entity1.getCenterY() - entity2.getCenterY(), 
-											  entity1.getCenterX() - entity2.getCenterX());
-						
-					// Apply the acceleration to the entity
-					entity2.accelerateHorizontal(findHorizontalComponent(acceleration, angle));
-					entity2.accelerateVertical(findVerticalComponent(acceleration, angle));
-				}
-			}    
+				for (int k = 0; k < entities.size(); k++) {
+					
+					GrabidelovEntity entity2 = entities.get(k);
+					
+					boolean immune = false;
+					/* Go through the immune class list and compare it to the entity class type */
+					for (int immuneClass : gravityImmuneList) {
+						if (entity2.getClassId() == immuneClass) {
+							immune = true;
+						}
+					}
+					
+					if (entity1 != entity2 && !immune) {
+						// Find the radius between the entity and the point of gravitation.
+						double radius = calculateRadius(entity1.getCenterX(), entity1.getCenterY(), entity2.getCenterX(), entity2.getCenterY());
 			
+						// Find the acceleration of the force
+						double gravityForce = calculateGravitationalForce(entity1.getMass(), entity2.getMass(), radius);
+						double acceleration = calculateAcceleration(gravityForce, entity2.getMass());
+							
+						// find the angle between the two masses
+						double angle = Math.atan2(entity1.getCenterY() - entity2.getCenterY(), 
+												  entity1.getCenterX() - entity2.getCenterX());
+							
+						// Apply the acceleration to the entity
+						entity2.accelerateHorizontal(findHorizontalComponent(acceleration, angle));
+						entity2.accelerateVertical(findVerticalComponent(acceleration, angle));
+					}
+				}  
+				
+			}
 		}
 
 		// Move all the entities and check their boundaries

@@ -3,7 +3,9 @@ package hellsten.inc.grabidelov;
 import java.io.IOException;
 import java.util.Random;
 
+import org.anddev.andengine.audio.music.Music;
 import org.anddev.andengine.audio.music.MusicFactory;
+import org.anddev.andengine.audio.sound.Sound;
 import org.anddev.andengine.audio.sound.SoundFactory;
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.Camera;
@@ -53,6 +55,11 @@ public class GameControlScreen extends BaseGameActivity implements
 	// Fields
 	// ===========================================================
 
+	/* Music and Sound variables */
+	private Music menuTheme;
+	private Sound projectileCollisionSound;
+	private Sound sunCollisionSound;
+	
 	private Camera mGameControlCamera;
 	private Scene mMainScene;
 	private Engine mEngine;
@@ -110,11 +117,11 @@ public class GameControlScreen extends BaseGameActivity implements
 				if (e1.getClassId() == GrabidelovSun.CLASS_ID && e2.getClassId() != GrabidelovSun.CLASS_ID) {
 					gravityLayer.detachChild(e2);
 					e2.destroy();
-					Resources.projectileCollisionSound.play();
+					GameControlScreen.this.projectileCollisionSound.play();
 				} else if (e2.getClassId() == GrabidelovSun.CLASS_ID && e1.getClassId() != GrabidelovSun.CLASS_ID) {
 					gravityLayer.detachChild(e1);
 					e1.destroy();
-					Resources.projectileCollisionSound.play();
+					GameControlScreen.this.projectileCollisionSound.play();
 				} 
 				
 				/* If they are both suns get rid of them both */
@@ -123,7 +130,7 @@ public class GameControlScreen extends BaseGameActivity implements
 					e1.destroy();				
 					gravityLayer.detachChild(e2);
 					e2.destroy();
-					Resources.sunCollisionSound.play();
+					GameControlScreen.this.sunCollisionSound.play();
 				}
 				
 			}
@@ -150,16 +157,16 @@ public class GameControlScreen extends BaseGameActivity implements
 		/* Import sound/music files */
 		SoundFactory.setAssetBasePath("mfx/");
 		try {
-			Resources.projectileCollisionSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "projectile_collision.wav");
-			Resources.sunCollisionSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "sun_collision.wav");
+			this.projectileCollisionSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "projectile_collision.wav");
+			this.sunCollisionSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "sun_collision.wav");
 		} catch (final IOException e) {
 			Debug.e(e);
 		}
 		
 		MusicFactory.setAssetBasePath("mfx/");
 		try {
-			Resources.menuTheme = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), GameControlScreen.this, "orbit.mp3");
-			Resources.menuTheme.setLooping(true);
+			this.menuTheme = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), GameControlScreen.this, "orbit.mp3");
+			this.menuTheme.setLooping(true);
 		} catch (final IOException e) {
 			Debug.e(e);
 		}
@@ -244,7 +251,7 @@ public class GameControlScreen extends BaseGameActivity implements
 	public Scene onLoadScene() {
 		
 		/* Play the main theme */
-		Resources.menuTheme.play();
+		this.menuTheme.play();
 		
 		this.createStaticMenuScene();
 		
@@ -266,7 +273,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 		// Set up the scene game loop
 		this.mMainScene.registerUpdateHandler(new IUpdateHandler() {                    
-            public void reset() {        
+            public void reset() {    
             }             
             public void onUpdate(float pSecondsElapsed) {         
             	
@@ -288,6 +295,11 @@ public class GameControlScreen extends BaseGameActivity implements
 		/* Start the gravity layer handler*/
 		mGameControlHandler.postDelayed(mShootLaunch, SHOOT_DELAY);
 		
+	}
+	
+	@Override
+	public void onGameResumed() {
+		resetGameControlScreen();
 	}
 
 	/* This launches the game control screen when it is exectued */
@@ -351,7 +363,7 @@ public class GameControlScreen extends BaseGameActivity implements
 					MainGameScreen.class);
 			GameControlScreen.this.startActivity(mainGameScreenIntent);
 			
-			Resources.menuTheme.stop();
+			this.menuTheme.pause();
 			
 			return true;
 		case MENU_LEAVE:
@@ -434,4 +446,16 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 	}
 	
+
+	// ===========================================================
+	// -- Resets the Game Control Screen to defaults
+	// ===========================================================
+	protected void resetGameControlScreen() {
+		this.menuTheme.resume(); 
+		this.menuTheme.seekTo(0);
+		gEngine.getGrabidelovEntities().clear();
+		while (gravityLayer.getChildCount() > 0) {
+			gravityLayer.detachChild(gravityLayer.getChild(gravityLayer.getChildCount() - 1));
+		}
+	}
 }

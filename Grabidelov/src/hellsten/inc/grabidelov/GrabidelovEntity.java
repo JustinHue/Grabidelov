@@ -18,16 +18,19 @@ public class GrabidelovEntity extends Sprite {
 	
 	protected int collisionType;
 	protected boolean destroyed;
+	protected boolean attracts;
 	
 	// ===========================================================
 	// Constructors 
 	// ===========================================================
+	
 	
 	public GrabidelovEntity(float x, float y, TextureRegion textureReference) {
 		super(x, y, textureReference);
 		this.xSpeed = 0;
 		this.ySpeed = 0;
 		this.destroyed = false;
+		this.attracts = true;
 	}
 
 	
@@ -66,6 +69,10 @@ public class GrabidelovEntity extends Sprite {
 	
 	public void destroy() {
 		this.destroyed = true;
+	}
+	
+	public void setAttraction(boolean flag) {
+		this.attracts = flag;
 	}
 	
 	// ===========================================================
@@ -108,4 +115,9 @@ public class GrabidelovEntity extends Sprite {
 		return destroyed;
 	}
 	
+	public boolean isAttracting() {
+		return attracts;
+	}
+
+
 }

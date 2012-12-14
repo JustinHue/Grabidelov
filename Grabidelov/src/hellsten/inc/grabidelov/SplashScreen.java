@@ -38,7 +38,6 @@ public class SplashScreen extends BaseGameActivity {
 	private TextureRegion mSplashTextureRegion;
 	private Handler mSplashHandler;
 
-	
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
@@ -48,7 +47,7 @@ public class SplashScreen extends BaseGameActivity {
 		
 		mSplashHandler = new Handler();
 		this.mSplashCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		
+
 		return new Engine(new EngineOptions(true, ScreenOrientation.LANDSCAPE,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
 				this.mSplashCamera));
