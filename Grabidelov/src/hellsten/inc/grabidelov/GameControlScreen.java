@@ -1,7 +1,10 @@
 package hellsten.inc.grabidelov;
 
+import java.io.IOException;
 import java.util.Random;
 
+import org.anddev.andengine.audio.music.MusicFactory;
+import org.anddev.andengine.audio.sound.SoundFactory;
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.Camera;
 import org.anddev.andengine.engine.handler.IUpdateHandler;
@@ -21,6 +24,7 @@ import org.anddev.andengine.opengl.texture.TextureOptions;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TextureRegionFactory;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
+import org.anddev.andengine.util.Debug;
 
 import android.content.Intent;
 import android.os.Handler;
@@ -34,7 +38,7 @@ public class GameControlScreen extends BaseGameActivity implements
 	// Constants
 	// ===========================================================
 
-	private static final int SHOOT_DELAY = 100;
+	private static final int SHOOT_DELAY = 500;
 	
 	/* Defines splash screen width and height */
 	private static final int CAMERA_WIDTH = 1024;
@@ -92,7 +96,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		this.mGameControlCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		this.mEngine = new Engine(new EngineOptions(true, ScreenOrientation.LANDSCAPE,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
-				this.mGameControlCamera));
+				this.mGameControlCamera).setNeedsSound(true).setNeedsMusic(true));
 		
 		/* Set the Grabidelov Engine */
 		this.gEngine = new GrabidelovEngine(this.mEngine, this.mGameControlCamera, gravityLayer);
@@ -106,9 +110,11 @@ public class GameControlScreen extends BaseGameActivity implements
 				if (e1.getClassId() == GrabidelovSun.CLASS_ID && e2.getClassId() != GrabidelovSun.CLASS_ID) {
 					gravityLayer.detachChild(e2);
 					e2.destroy();
+					Resources.projectileCollisionSound.play();
 				} else if (e2.getClassId() == GrabidelovSun.CLASS_ID && e1.getClassId() != GrabidelovSun.CLASS_ID) {
 					gravityLayer.detachChild(e1);
 					e1.destroy();
+					Resources.projectileCollisionSound.play();
 				} 
 				
 				/* If they are both suns get rid of them both */
@@ -117,6 +123,7 @@ public class GameControlScreen extends BaseGameActivity implements
 					e1.destroy();				
 					gravityLayer.detachChild(e2);
 					e2.destroy();
+					Resources.sunCollisionSound.play();
 				}
 				
 			}
@@ -139,6 +146,23 @@ public class GameControlScreen extends BaseGameActivity implements
 
 	@Override
 	public void onLoadResources() {
+		
+		/* Import sound/music files */
+		SoundFactory.setAssetBasePath("mfx/");
+		try {
+			Resources.projectileCollisionSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "projectile_collision.wav");
+			Resources.sunCollisionSound = SoundFactory.createSoundFromAsset(this.mEngine.getSoundManager(), this, "sun_collision.wav");
+		} catch (final IOException e) {
+			Debug.e(e);
+		}
+		
+		MusicFactory.setAssetBasePath("mfx/");
+		try {
+			Resources.menuTheme = MusicFactory.createMusicFromAsset(this.mEngine.getMusicManager(), GameControlScreen.this, "orbit.mp3");
+			Resources.menuTheme.setLooping(true);
+		} catch (final IOException e) {
+			Debug.e(e);
+		}
 		
 		/* Set the texture set up in the gfx directory */
 		TextureRegionFactory.setAssetBasePath("gfx/");
@@ -218,6 +242,9 @@ public class GameControlScreen extends BaseGameActivity implements
 
 	@Override
 	public Scene onLoadScene() {
+		
+		/* Play the main theme */
+		Resources.menuTheme.play();
 		
 		this.createStaticMenuScene();
 		
@@ -318,8 +345,14 @@ public class GameControlScreen extends BaseGameActivity implements
 		System.err.println("Menu Item Pressed");
 		switch (pMenuItem.getID()) {
 		case MENU_PLAY:
-			Toast.makeText(GameControlScreen.this, "Play selected",
-					Toast.LENGTH_SHORT).show();
+
+			/* Start the main game screen */
+			Intent mainGameScreenIntent = new Intent(GameControlScreen.this,
+					MainGameScreen.class);
+			GameControlScreen.this.startActivity(mainGameScreenIntent);
+			
+			Resources.menuTheme.stop();
+			
 			return true;
 		case MENU_LEAVE:
 			/* End Activity. */
@@ -327,9 +360,9 @@ public class GameControlScreen extends BaseGameActivity implements
 			return true;
 		case MENU_INSTRUCTIONS:
 			
-			Intent myIntent = new Intent(GameControlScreen.this,
+			Intent insturctionScreenIntent = new Intent(GameControlScreen.this,
 					InstructionsScreen.class);
-			GameControlScreen.this.startActivity(myIntent);
+			GameControlScreen.this.startActivity(insturctionScreenIntent);
 			
 			/* Reset the Game Control Screen */
 			runOnUpdateThread(new Runnable() {

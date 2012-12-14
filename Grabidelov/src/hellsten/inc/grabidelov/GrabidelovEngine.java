@@ -274,7 +274,7 @@ public class GrabidelovEngine {
 	// -- Determines if the entity is within the boundaries arguements passed, returns
 	// -- the side the collision occured.
 	//=====================================================================================	
-	public int isWithinBoundary(GrabidelovEntity entity, 
+	public static int isWithinBoundary(GrabidelovEntity entity, 
 				float leftBoundary, float topBoundary, float rightBoundary, float bottomBoundary) {
 		if (entity.getX() < leftBoundary) {
 			return GrabidelovEngine.LEFT_SIDE;
@@ -309,6 +309,7 @@ public class GrabidelovEngine {
 	public boolean circleCollisionDetect(GrabidelovEntity e1, GrabidelovEntity e2) {
 		double radius = calculateRadius(e1.getCenterX(), e1.getCenterY(), e2.getCenterX(), e2.getCenterY());
 		double totalDiameter = e1.getWidth() / 2 + e2.getHeight() / 2;
+		
 		// compare the radius between the entities and their combined diameters
 		if (totalDiameter - radius > 0) {
 			return true;
@@ -358,10 +359,10 @@ public class GrabidelovEngine {
 	//=====================================================================================
 	// -- Find components  
 	//=====================================================================================
-	double findHorizontalComponent(double component, double angle) {
+	private double findHorizontalComponent(double component, double angle) {
 		return component * Math.cos(angle);
 	} 
-	double findVerticalComponent(double component, double angle) {
+	private double findVerticalComponent(double component, double angle) {
 		return component * Math.sin(angle);
 	}
 	

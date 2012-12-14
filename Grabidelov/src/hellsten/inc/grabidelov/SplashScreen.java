@@ -58,6 +58,15 @@ public class SplashScreen extends BaseGameActivity {
 	@Override
 	public void onLoadResources() {
 		
+		//===========================================================
+		// Load Game Resources
+		//===========================================================
+
+		
+		
+		//===========================================================
+		// Load Resources for the Splash Screen
+		//===========================================================
 		/* Set the texture set up in the gfx directory */
 		TextureRegionFactory.setAssetBasePath("gfx/");
 		

@@ -6,7 +6,7 @@ public class MyConstants {
 	// Constants
 	// ===========================================================
 
-	public final static int MAX_GAME_CONTROL_SCREEN_SHOTS = 25;
+	public final static int MAX_GAME_CONTROL_SCREEN_SHOTS = 20;
 	
 	public final static float DEFAULT_MAX_SHOOT_SPEED = 1.0f;
 	public final static float DEFAULT_MIN_SHOOT_SPEED = 0.75f;
