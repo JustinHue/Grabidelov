@@ -32,6 +32,7 @@ import org.anddev.andengine.opengl.texture.region.TextureRegionFactory;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
 import org.anddev.andengine.util.Debug;
 
+import android.content.Intent;
 import android.graphics.Color;
 
 public class MainGameScreen extends BaseGameActivity {
@@ -86,8 +87,7 @@ public class MainGameScreen extends BaseGameActivity {
 	
 	private Entity healthBarStatus;
 	
-	private int score;
-	
+
 	private Font font;
 	private Texture fontTexture;
 	private ChangeableText text;
@@ -98,7 +98,7 @@ public class MainGameScreen extends BaseGameActivity {
 		this.mMainGameScreenCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		
 		/* Set the Grabidelov Engine */
-		this.gEngine = new GrabidelovEngine(this.mEngine, this.mMainGameScreenCamera, gravityLayer);
+		this.gEngine = new GrabidelovEngine(this.mMainGameScreenCamera);
 		this.gEngine.setBoundaryFields(0, CAMERA_WIDTH, CAMERA_HEIGHT, 0);
 		this.gEngine.setOnEntityCollisionListener(new GrabidelovEngine.OnEntityCollisionListener() {
 			@Override
@@ -125,24 +125,32 @@ public class MainGameScreen extends BaseGameActivity {
 					gravityLayer.detachChild(e2);
 					e2.destroy();				
 					MainGameScreen.this.blackHoleCollisionSound.play();
-					restart();
+					
+					MyConstants.won = true;
+					
+					Intent myIntent = new Intent(MainGameScreen.this,
+							GameEndScreen.class);
+					MainGameScreen.this.startActivity(myIntent);
+					
+					MainGameScreen.this.finish();
+					
 				}
 				
 				
 				/* Check if the player collected a point */
 				if (e1.classId == GrabidelovPoint.CLASS_ID ) {
-					score += MyConstants.POINT_SCORE;
+					MyConstants.score += MyConstants.POINT_SCORE;
 					e1.destroy();
 					gravityLayer.detachChild(e1);
 					MainGameScreen.this.pointCollisionSound.play();
 				} else if (e2.classId == GrabidelovPoint.CLASS_ID) {
-					score += MyConstants.POINT_SCORE;
+					MyConstants.score += MyConstants.POINT_SCORE;
 					e2.destroy();
 					gravityLayer.detachChild(e2);	
 					MainGameScreen.this.pointCollisionSound.play();
 				}
 
-				text.setText("Score: " + score);
+				text.setText("Score: " + MyConstants.score);
 			}
 		
 			
@@ -171,13 +179,28 @@ public class MainGameScreen extends BaseGameActivity {
 	}
 
 	public void restart() {
-		/* Recreate the player */
-		player = createNextPlayer(MyConstants.START_LOCATION_X, MyConstants.START_LOCATION_Y);
-		gravityLayer.attachChild(player);
-		mMainGameScene.registerTouchArea(player);
+		playerOrderCounter++;
 		
-		/* Deduct entity from health bar */
-		healthBarStatus.detachChild(healthBarStatus.getFirstChild());
+		if (playerOrderCounter >= MyConstants.MAX_NUM_LIVES) {
+			
+			MyConstants.won = false;
+			
+			Intent myIntent = new Intent(MainGameScreen.this,
+					GameEndScreen.class);
+			MainGameScreen.this.startActivity(myIntent);
+			
+			MainGameScreen.this.finish();
+		} else {
+
+			/* Recreate the player */
+			player = createNextPlayer(MyConstants.START_LOCATION_X, MyConstants.START_LOCATION_Y);
+	
+			gravityLayer.attachChild(player);
+			mMainGameScene.registerTouchArea(player);
+			
+			/* Deduct entity from health bar */
+			healthBarStatus.detachChild(healthBarStatus.getFirstChild());
+		}
 	}
 	
 	@Override
@@ -251,7 +274,7 @@ public class MainGameScreen extends BaseGameActivity {
 		this.mBackgroundTexture = new Texture (1024, 1024,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.mBackgroundTextureRegion = TextureRegionFactory.createFromAsset(
-				this.mBackgroundTexture, this, "game/background.png", 0, 0);
+				this.mBackgroundTexture, this, "game/background.jpg", 0, 0);
 		
 		/* Load the game textures in to the texture manager */
 		this.mEngine.getTextureManager().loadTexture(this.mSunTexture);	
@@ -270,7 +293,6 @@ public class MainGameScreen extends BaseGameActivity {
 		/* Initialize game variables */
 		playerOrderCounter = 0;
 		dragLine = null;
-		score = 0;
 		
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 		
@@ -361,12 +383,7 @@ public class MainGameScreen extends BaseGameActivity {
 	public GrabidelovEntity createNextPlayer(float x, float y) {
 		
 		GrabidelovEntity retEntity = null;
-		
-		if (playerOrderCounter > MyConstants.MAX_NUM_LIVES) {
-			/* Game over */
-			
-		} else {
-		
+
 			if (MyConstants.playerOrder[playerOrderCounter].equals("red")) {
 				retEntity = new GrabidelovRed(x, y) {
 					@Override
@@ -397,9 +414,8 @@ public class MainGameScreen extends BaseGameActivity {
 						return true;
 					}
 	        };
-			}
+
 			
-			playerOrderCounter++;
 		}
 		return retEntity;
 	}
@@ -416,9 +432,9 @@ public class MainGameScreen extends BaseGameActivity {
         	   player.setPosition(pSceneTouchEvent.getX() - player.getWidth() / 2, pSceneTouchEvent.getY() - player.getHeight() / 2);
         	    
         	    /* Create a line between the last position and current position of the player */
-        	    if (MainGameScreen.this.dragLine != null) {
+    
         	    	MainGameScreen.this.mMainGameScene.detachChild(MainGameScreen.this.dragLine);
-        	    }
+      
 
         	    	MainGameScreen.this.dragLine = new Line ((float)MainGameScreen.this.lastX, (float)MainGameScreen.this.lastY, 
         	    			(float)player.getCenterX(), (float)player.getCenterY());

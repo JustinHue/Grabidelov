@@ -1,5 +1,15 @@
+
+/*
+ * File Name: GameControlScreen.java
+ * Author's Name: Justin Hellsten
+ * Date: Decemeber 14, 2012
+ * Purpose: This activity is the main menu screen for the game.
+ * 
+ */
+
 package hellsten.inc.grabidelov;
 
+/* Import files */
 import java.io.IOException;
 import java.util.Random;
 
@@ -15,7 +25,6 @@ import org.anddev.andengine.engine.options.EngineOptions.ScreenOrientation;
 import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
 import org.anddev.andengine.entity.Entity;
 import org.anddev.andengine.entity.scene.Scene;
-import org.anddev.andengine.entity.scene.background.ColorBackground;
 import org.anddev.andengine.entity.scene.menu.MenuScene;
 import org.anddev.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
 import org.anddev.andengine.entity.scene.menu.item.IMenuItem;
@@ -34,6 +43,9 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.widget.Toast;
 
+/* 
+ * This class defines the main menu for the game.
+ */
 public class GameControlScreen extends BaseGameActivity implements
 			IOnMenuItemClickListener {
 
@@ -43,7 +55,7 @@ public class GameControlScreen extends BaseGameActivity implements
 
 	private static final int SHOOT_DELAY = 500;
 	
-	/* Defines splash screen width and height */
+	/* Defines main menu  width and height */
 	private static final int CAMERA_WIDTH = 1024;
 	private static final int CAMERA_HEIGHT = 614;
 	
@@ -102,6 +114,7 @@ public class GameControlScreen extends BaseGameActivity implements
 	// Methods for/from SuperClass/Interfaces
 	// ===========================================================
 	
+	/* This method loads the engine */
 	@Override
 	public Engine onLoadEngine() {
 		
@@ -112,7 +125,7 @@ public class GameControlScreen extends BaseGameActivity implements
 				this.mGameControlCamera).setNeedsSound(true).setNeedsMusic(true));
 		
 		/* Set the Grabidelov Engine */
-		this.gEngine = new GrabidelovEngine(this.mEngine, this.mGameControlCamera, gravityLayer);
+		this.gEngine = new GrabidelovEngine(this.mGameControlCamera);
 		this.gEngine.setBoundaryFields(-1000, 2000, 1500, -1000);
 		this.gEngine.setOnEntityCollisionListener(new GrabidelovEngine.OnEntityCollisionListener() {
 			
@@ -157,6 +170,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 	}
 
+	/* This loads the main menu resources */
 	@Override
 	public void onLoadResources() {
 		
@@ -202,7 +216,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		this.mBackgroundTexture = new Texture (1024, 1024,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
 		this.mBackgroundTextureRegion = TextureRegionFactory.createFromAsset(
-				this.mBackgroundTexture, this, "game/background.png", 0, 0);
+				this.mBackgroundTexture, this, "game/background.jpg", 0, 0);
 		
 		/* Set the texture set up in the gfx directory */
 		TextureRegionFactory.setAssetBasePath("gfx/");
@@ -259,6 +273,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 	}
 
+	/* This method loads the scene aka, main menu */
 	@Override
 	public Scene onLoadScene() {
 		
@@ -302,6 +317,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 	}
 
+	/* This executes when the loading completes, here the projectiles shooter handler is executed */
 	@Override
 	public void onLoadComplete() {	
 		
@@ -310,6 +326,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 	}
 	
+	/* This executes when the game is resumed */
 	@Override
 	public void onGameResumed() {
 		resetGameControlScreen();
@@ -344,25 +361,11 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 	};
 	
-	@Override
-	public boolean onKeyDown(final int pKeyCode, final KeyEvent pEvent) {
-		if (pKeyCode == KeyEvent.KEYCODE_MENU
-				&& pEvent.getAction() == KeyEvent.ACTION_DOWN) {
-			if (popupDisplayed) {
-				/* Remove the menu and reset it. */
-				mMainScene.setChildScene(mStaticMenuScene);
-				popupDisplayed = false;
-			} else {
-				/* Attach the menu. */
-				popupDisplayed = true;
-			}
-			return true;
-		} else {
-			return super.onKeyDown(pKeyCode, pEvent);
-		}
-	}
 	
-
+	/* This method handles the menu item clicks, if one menu item is clicked it is executed. If the 
+	 * play menu item is clicked the game is started, if the instructions menu item the instructions
+	 * activity is displayed, and if the leave menu item is clicked the game is closed.
+	 */
 	@Override
 	public boolean onMenuItemClicked(final MenuScene pMenuScene,
 			final IMenuItem pMenuItem, final float pMenuItemLocalX,
@@ -410,6 +413,7 @@ public class GameControlScreen extends BaseGameActivity implements
 	// Methods
 	// ===========================================================
 
+	/* This method creates the main menu (play, instructions, leave). */
 	protected void createStaticMenuScene() {
 		
 		this.mStaticMenuScene = new MenuScene(this.mGameControlCamera);
@@ -429,6 +433,9 @@ public class GameControlScreen extends BaseGameActivity implements
 		
 	}
 
+	/* This method creates a random grabidelov entity which we use to shoot out randomly around the 
+	 * main menu.
+	 */
 	protected GrabidelovEntity createRandomGrabidelovEntity() {
 		
 		Random randomGenerator = new Random();

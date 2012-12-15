@@ -8,14 +8,12 @@ import org.anddev.andengine.engine.options.resolutionpolicy.RatioResolutionPolic
 import org.anddev.andengine.entity.scene.Scene;
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.util.FPSLogger;
+import org.anddev.andengine.input.touch.TouchEvent;
 import org.anddev.andengine.opengl.texture.Texture;
 import org.anddev.andengine.opengl.texture.TextureOptions;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 import org.anddev.andengine.opengl.texture.region.TextureRegionFactory;
 import org.anddev.andengine.ui.activity.BaseGameActivity;
-
-import android.content.Intent;
-import android.os.Handler;
 
 public class InstructionsScreen extends BaseGameActivity {
 
@@ -23,21 +21,20 @@ public class InstructionsScreen extends BaseGameActivity {
 	// Constants
 	// ===========================================================
 
-	/* Defines splash screen width and height */
+	/* Defines instructions screen width and height */
 	private static final int CAMERA_WIDTH = 1024;
 	private static final int CAMERA_HEIGHT = 614;
-	
-	private static final int SPLASH_DELAY = 3000;
 	
 	// ===========================================================
 	// Fields
 	// ===========================================================
 
-	private Camera mSplashCamera;
-	private Texture mSplashTexture;
-	private TextureRegion mSplashTextureRegion;
-	private Handler mSplashHandler;
+	private Camera mInstructionsCamera;
+	private Texture mInstructionTexture;
+	private TextureRegion mInstructionTextureRegion;
 
+	private Texture mBackTexture;
+	private TextureRegion mBackTextureRegion;
 	
 	// ===========================================================
 	// Methods for/from SuperClass/Interfaces
@@ -45,13 +42,12 @@ public class InstructionsScreen extends BaseGameActivity {
 	
 	@Override
 	public Engine onLoadEngine() {
-		
-		mSplashHandler = new Handler();
-		this.mSplashCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
+
+		this.mInstructionsCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 		
 		return new Engine(new EngineOptions(true, ScreenOrientation.LANDSCAPE,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT),
-				this.mSplashCamera));
+				this.mInstructionsCamera));
 		
 	}
 
@@ -61,14 +57,21 @@ public class InstructionsScreen extends BaseGameActivity {
 		/* Set the texture set up in the gfx directory */
 		TextureRegionFactory.setAssetBasePath("gfx/");
 		
-		/* Set up the splash texture */
-		this.mSplashTexture = new Texture(1024, 512,
+		/* Set up the instructions texture */
+		this.mInstructionTexture = new Texture(1024, 1024,
 				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
-		this.mSplashTextureRegion = TextureRegionFactory.createFromAsset(
-				this.mSplashTexture, this, "hellsten_inc.png", 0, 0);
+		this.mInstructionTextureRegion = TextureRegionFactory.createFromAsset(
+				this.mInstructionTexture, this, "game/instructions.jpg", 0, 0);
 
+		/* Set up the back button texture */
+		this.mBackTexture = new Texture(1024, 1024,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mBackTextureRegion = TextureRegionFactory.createFromAsset(
+				this.mBackTexture, this, "game/go_back.png", 0, 0);
+		
 		/* Load the textures to the texture manager */
-		this.mEngine.getTextureManager().loadTexture(this.mSplashTexture);
+		this.mEngine.getTextureManager().loadTexture(this.mInstructionTexture);
+		this.mEngine.getTextureManager().loadTexture(this.mBackTexture);
 		
 	}
 
@@ -79,18 +82,24 @@ public class InstructionsScreen extends BaseGameActivity {
 
 		final Scene scene = new Scene(1);
 
-		/* Center the splash on the camera. */
-		final int centerX = (CAMERA_WIDTH - this.mSplashTextureRegion
-				.getWidth()) / 2;
-		final int centerY = (CAMERA_HEIGHT - this.mSplashTextureRegion
-				.getHeight()) / 2;
-
-		/* Create the splash sprite and add it to the scene. */
-		final Sprite splash = new Sprite(centerX, centerY,
-				this.mSplashTextureRegion);
+		final Sprite instructions = new Sprite(0, 0, this.mInstructionTextureRegion);
+    
+		final Sprite backButton = new Sprite(800, 25, this.mBackTextureRegion)  {
+			@Override
+			public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+				
+				/* Go back to main menu */
+				finish();
+				
+				return true;
+			}
+		}; 
 		
-		/* Add all the entities to the scene */
-		scene.getLastChild().attachChild(splash);
+		scene.attachChild(instructions);
+		scene.attachChild(backButton);
+		
+		scene.registerTouchArea(backButton);
+		scene.setTouchAreaBindingEnabled(true);
 		
 		return scene;
 		
@@ -98,20 +107,8 @@ public class InstructionsScreen extends BaseGameActivity {
 
 	@Override
 	public void onLoadComplete() {
-		
-		/* Start the splash launch after the delay */
-		mSplashHandler.postDelayed(mLaunchSplash, SPLASH_DELAY);
-		
+
 	}
 	
-	/* This launches the game control screen when it is exectued */
-	private Runnable mLaunchSplash = new Runnable() {
-		
-		public void run() {
-
-		}
-		
-	};
-
 	
 }

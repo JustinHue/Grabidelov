@@ -25,6 +25,7 @@
         <activity android:name=".GameControlScreen"></activity>
         <activity android:name=".InstructionsScreen"></activity>
         <activity android:name=".MainGameScreen"></activity>
+        <activity android:name=".GameEndScreen"></activity>
     </application>
 	
 </manifest>

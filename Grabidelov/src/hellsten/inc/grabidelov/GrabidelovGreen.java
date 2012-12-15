@@ -1,8 +1,18 @@
+/*
+ * File Name: GrabidelovGreen.java
+ * Author's Name: Justin Hellsten
+ * Date: Decemeber 14, 2012
+ * Purpose: This defines the green projectile.
+ * 
+ */
 package hellsten.inc.grabidelov;
 
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 
+/* This class defines the green projectile. Green projectiles are greater in mass than all their other counterparts
+ * However they are larger in mass compared to their red counterparts.
+ */
 public class GrabidelovGreen extends GrabidelovEntity {
 
 	// ===========================================================

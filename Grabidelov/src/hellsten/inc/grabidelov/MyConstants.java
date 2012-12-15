@@ -29,4 +29,9 @@ public class MyConstants {
 	/* Player order */
 	public final static String[] playerOrder = {"red", "blue", "green"};
 	
+	/* Static variables */
+	public static int score = 0;
+	public static int high_score;
+	public static boolean won = false;
+	
 }

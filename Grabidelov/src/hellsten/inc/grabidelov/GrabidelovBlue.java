@@ -1,8 +1,18 @@
+/*
+ * File Name: GrabidelovBlue.java
+ * Author's Name: Justin Hellsten
+ * Date: Decemeber 14, 2012
+ * Purpose: This defines the blue projectile. 
+ * 
+ */
 package hellsten.inc.grabidelov;
 
 import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.opengl.texture.region.TextureRegion;
 
+/* This class defines the blue projectile. Blue projectiles are smaller in mass than their green counterparts.
+ * However they are larger in mass compared to their red counterparts.
+ */
 public class GrabidelovBlue extends GrabidelovEntity {
 
 	// ===========================================================
@@ -14,14 +24,8 @@ public class GrabidelovBlue extends GrabidelovEntity {
 	// Constants
 	// ===========================================================
 	
-	
 	public final static float DEFAULT_MASS = 5.0f;
 	public final static int CLASS_ID = 0x004;
-	
-	// ===========================================================
-	// Fields
-	// ===========================================================
-	
 	
 	// ===========================================================
 	// Constructors 

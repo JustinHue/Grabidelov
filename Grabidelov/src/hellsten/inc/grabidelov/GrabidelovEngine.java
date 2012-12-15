@@ -1,13 +1,23 @@
+/*
+ * File Name: GrabidelovEngine.java
+ * Author's Name: Justin Hellsten
+ * Date: Decemeber 14, 2012
+ * Purpose: This is the life blood of the game. Without it the game has no way to implement gravitational forces, and to perform
+ * 		    collision detection.
+ * 
+ */
 package hellsten.inc.grabidelov;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Random;
 
 import org.anddev.andengine.engine.Engine;
 import org.anddev.andengine.engine.camera.Camera;
 import org.anddev.andengine.entity.Entity;
 
+/* This class defines the grabidelov engine. The grabidelov engine can be used for collision detection for either rectangler or circle like objects.
+ * If grabidelov entities are added to the grabidelov engine list, if properly runned those entities will gravitate towards each other.
+ */
 public class GrabidelovEngine {
 	
 	// ===========================================================
@@ -50,8 +60,6 @@ public class GrabidelovEngine {
 	private ArrayList <Integer> gravityImmuneList;
 	
 	private Camera cameraContext;
-	private Entity layerContext;
-	private Engine engineContext;
 	
 	// Boundary fields
 	private float leftBoundary, topBoundary, rightBoundary, bottomBoundary;
@@ -60,16 +68,14 @@ public class GrabidelovEngine {
 	// Constructors
 	// ===========================================================
 	
-	public GrabidelovEngine(Engine engineContext, Camera cameraContext, Entity layerContext) {
+	public GrabidelovEngine(Camera cameraContext) {
 		
 		this.leftBoundary = 0;
 		this.topBoundary = 0;
 		this.rightBoundary = 0;
 		this.bottomBoundary = 0;
 		
-		this.engineContext = engineContext;
 		this.cameraContext = cameraContext;
-		this.layerContext = layerContext;
 		this.entities = new ArrayList<GrabidelovEntity>();
 		this.gravityImmuneList = new ArrayList<Integer>();
 	}
