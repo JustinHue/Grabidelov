@@ -356,6 +356,7 @@ public class GrabidelovEngine {
 	// -- Calculate force of gravity
 	//=====================================================================================
 	private double calculateGravitationalForce(double m1, double m2, double r) {
+		if (r == 0) return 0;
 		return GRAVITY_CONSTANT * (m1*m2) / (r*r);
 	}
 
@@ -370,6 +371,7 @@ public class GrabidelovEngine {
 	// -- Calculate acceleration due to force and mass
 	//=====================================================================================
 	private double calculateAcceleration(double f, double m) {
+		if (m == 0) return 0;
 		return f / m;
 	}
 	

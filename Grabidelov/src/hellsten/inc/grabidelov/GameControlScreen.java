@@ -20,6 +20,7 @@ import org.anddev.andengine.entity.scene.menu.MenuScene;
 import org.anddev.andengine.entity.scene.menu.MenuScene.IOnMenuItemClickListener;
 import org.anddev.andengine.entity.scene.menu.item.IMenuItem;
 import org.anddev.andengine.entity.scene.menu.item.SpriteMenuItem;
+import org.anddev.andengine.entity.sprite.Sprite;
 import org.anddev.andengine.entity.util.FPSLogger;
 import org.anddev.andengine.opengl.texture.Texture;
 import org.anddev.andengine.opengl.texture.TextureOptions;
@@ -84,11 +85,16 @@ public class GameControlScreen extends BaseGameActivity implements
 	private Texture mLeaveTexture;
 	private TextureRegion mLeaveTextureRegion;
 	
+	private Texture mBackgroundTexture;
+	private TextureRegion mBackgroundTextureRegion;
+	
 	/* Game Textures (put these as static variables in the classes later ) */
 	private Texture mSunTexture;
 	private Texture mRedTexture;
 	private Texture mBlueTexture;
 	private Texture mGreenTexture;
+	
+	
 	
 	private boolean popupDisplayed;
 
@@ -192,6 +198,11 @@ public class GameControlScreen extends BaseGameActivity implements
 		this.mLeaveTextureRegion = TextureRegionFactory.createFromAsset(
 				this.mLeaveTexture, this, "menu/leave.png", 0, 0);
 		
+		/* Set the background texture */
+		this.mBackgroundTexture = new Texture (1024, 1024,
+				TextureOptions.BILINEAR_PREMULTIPLYALPHA);
+		this.mBackgroundTextureRegion = TextureRegionFactory.createFromAsset(
+				this.mBackgroundTexture, this, "game/background.png", 0, 0);
 		
 		/* Set the texture set up in the gfx directory */
 		TextureRegionFactory.setAssetBasePath("gfx/");
@@ -238,6 +249,7 @@ public class GameControlScreen extends BaseGameActivity implements
 		this.mEngine.getTextureManager().loadTexture(this.mRedTexture);	
 		this.mEngine.getTextureManager().loadTexture(this.mBlueTexture);	
 		this.mEngine.getTextureManager().loadTexture(this.mGreenTexture);	
+		this.mEngine.getTextureManager().loadTexture(this.mBackgroundTexture);	
 		
 		/* Load other textures to the texture manager */
 		this.mEngine.getTextureManager().loadTexture(this.mInstructionsTexture);
@@ -258,7 +270,8 @@ public class GameControlScreen extends BaseGameActivity implements
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
 		this.mMainScene = new Scene(1);
-		this.mMainScene.setBackground(new ColorBackground(0.8f, 0.8f, 0.9f)); // set the scene background to a light light grey
+		// Set the background
+		this.mMainScene.attachChild(new Sprite(0, 0, this.mBackgroundTextureRegion));
 		
 		
 		/* Create the gravity layer entity */

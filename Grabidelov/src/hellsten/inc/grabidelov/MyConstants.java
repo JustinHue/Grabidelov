@@ -24,6 +24,7 @@ public class MyConstants {
 	public final static int MAX_NUM_LIVES = 3;
 	
 	public final static float SHOOT_FACTOR = 0.1f;
+	public final static int POINT_SCORE = 100;
 	
 	/* Player order */
 	public final static String[] playerOrder = {"red", "blue", "green"};
